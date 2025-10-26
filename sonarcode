@@ -82,7 +82,7 @@ def addGenerateReport() {
 }
 
 def analyzeCodeQuality() {
-    withCredentials([string(credentialsId: 'sqp_755702459a83ce1cca3695fba09217cbf0a7f096', variable: 'SONAR_TOKEN')]) {
+    withCredentials([string(credentialsId: 'fc149035-2562-4a74-8366-fd922b9978f2', variable: 'SONAR_TOKEN')]) {
         sh '''
            mvn sonar:sonar \
            -Dsonar.projectKey="$SONARQUBE_PROJECT_KEY" \
