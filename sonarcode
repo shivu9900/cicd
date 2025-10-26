@@ -1,0 +1,93 @@
+pipeline {
+    agent any
+    environment {
+        SONARQUBE_URL = 'http://3.80.35.217::9000'  /* Adjust SonarQube server URL if needed */
+        SONARQUBE_PROJECT_KEY = 'sonartest'
+    }
+    stages {
+        stage('Checkout SCM') {
+            steps {
+                script {
+                    checkoutSCM()
+                }
+            }
+        }
+
+        stage('Compiling and Running Test Cases') {
+            steps {
+                script {
+                    compileAndRunTests()
+                }
+            }
+        }
+
+        stage('Generating Cucumber Reports') {
+            steps {
+                script {
+                    generateCucumberReports()
+                }
+            }
+        }
+
+        stage('Creating Package') {
+            steps {
+                script {
+                    createPackage()
+                }
+            }
+        }
+
+        stage('Adding Generate Report') {
+            steps {
+                script {
+                    addGenerateReport()
+                }
+            }
+        }
+
+        stage('Analyzing Code Quality') {
+            steps {
+                script {
+                    analyzeCodeQuality()
+                }
+            }
+        }
+    }
+}
+
+def checkoutSCM() {
+    checkout scm: [
+        $class: 'GitSCM',
+        branches: [[name: '*/master']], 
+        userRemoteConfigs: [[url: 'https://github.com/hellokaton/java11-examples.git']]
+    ]
+}
+
+def compileAndRunTests() {
+    sh 'mvn clean'
+    sh 'mvn compile'
+    sh 'mvn test'
+}
+
+def generateCucumberReports() {
+    sh 'mvn verify'
+}
+
+def createPackage() {
+    sh 'mvn package'
+}
+
+def addGenerateReport() {
+    sh 'mvn verify'
+}
+
+def analyzeCodeQuality() {
+    withCredentials([string(credentialsId: 'sqp_755702459a83ce1cca3695fba09217cbf0a7f096', variable: 'SONAR_TOKEN')]) {
+        sh '''
+           mvn sonar:sonar \
+           -Dsonar.projectKey="$SONARQUBE_PROJECT_KEY" \
+           -Dsonar.host.url="$SONARQUBE_URL" \
+           -Dsonar.login="$SONAR_TOKEN"
+        '''
+    }
+}
