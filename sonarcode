@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        SONARQUBE_URL = 'http://3.80.35.217::9000'  /* Adjust SonarQube server URL if needed */
+        SONARQUBE_URL = 'http://3.80.35.217:9000'  /* Adjust SonarQube server URL if needed */
         SONARQUBE_PROJECT_KEY = 'sonartest'
     }
     stages {
